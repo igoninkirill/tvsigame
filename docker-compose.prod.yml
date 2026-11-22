@@ -1,0 +1,63 @@
+# Продакшен-развёртывание «Своей Игры» на чистом VPS.
+#
+# Отличия от docker-compose.yml (разработки):
+#   - Postgres НЕ торчит наружу (только внутренняя сеть compose);
+#   - приложение тоже не торчит наружу — перед ним Caddy;
+#   - Caddy слушает 80/443 и сам выпускает/продлевает HTTPS-сертификат
+#     для домена из переменной DOMAIN (.env);
+#   - POSTGRES_PASSWORD обязателен (задаётся в .env, без дефолта).
+#
+# Запуск:  cp .env.example .env  → заполнить DOMAIN и POSTGRES_PASSWORD
+#          docker compose -f docker-compose.prod.yml up -d --build
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-sigame}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?задайте POSTGRES_PASSWORD в .env}
+      POSTGRES_DB: ${POSTGRES_DB:-sigame}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sigame}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_PORT: 8080
+      DATABASE_URL: postgres://${POSTGRES_USER:-sigame}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-sigame}?sslmode=disable
+      MEDIA_DIR: /data/media
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-512}
+      ROOM_TTL_HOURS: ${ROOM_TTL_HOURS:-72}
+    volumes:
+      - media:/data/media
+
+  caddy:
+    image: caddy:2-alpine
+    restart: always
+    depends_on:
+      - app
+    environment:
+      DOMAIN: ${DOMAIN:?задайте DOMAIN в .env (например, krutokir.online)}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  media:
+  caddy_data:
+  caddy_config:

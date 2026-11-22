@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-sigame}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sigame}
+      POSTGRES_DB: ${POSTGRES_DB:-sigame}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sigame}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_PORT: 8080
+      DATABASE_URL: postgres://${POSTGRES_USER:-sigame}:${POSTGRES_PASSWORD:-sigame}@db:5432/${POSTGRES_DB:-sigame}?sslmode=disable
+      MEDIA_DIR: /data/media
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-512}
+      ROOM_TTL_HOURS: ${ROOM_TTL_HOURS:-72}
+    volumes:
+      - media:/data/media
+    ports:
+      - "${APP_PORT:-8080}:8080"
+
+volumes:
+  pgdata:
+  media:

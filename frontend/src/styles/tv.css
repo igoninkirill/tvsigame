@@ -1,0 +1,578 @@
+/* ТВ-экран: телевизионная стилистика. Рассчитан на 1920×1080 и 3840×2160 —
+   размеры заданы в vh/vw, чтобы табло масштабировалось под любой экран. */
+
+.tv-root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse at 50% -20%, rgba(40, 62, 160, 0.55) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 120%, rgba(16, 28, 90, 0.8) 0%, transparent 55%),
+    linear-gradient(180deg, #081040 0%, #060d33 55%, #04081f 100%);
+  overflow: hidden;
+  font-family: var(--font-display);
+}
+
+/* --- Экран ожидания --- */
+
+.tv-waiting {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4vh;
+  text-align: center;
+  padding: 4vh;
+}
+
+.tv-waiting__title {
+  font-size: 9vh;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: 0 0 4vh rgba(255, 200, 50, 0.35);
+}
+
+.tv-waiting__code {
+  font-size: 18vh;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  padding: 2vh 6vw;
+  border: 0.6vh solid var(--gold);
+  border-radius: 2vh;
+  background: rgba(10, 20, 69, 0.85);
+  box-shadow: 0 0 6vh rgba(255, 200, 50, 0.25), inset 0 0 4vh rgba(0, 0, 0, 0.5);
+}
+
+.tv-waiting__hint {
+  font-size: 4vh;
+  color: var(--text-dim);
+}
+
+/* --- Подготовка / лобби --- */
+
+.tv-lobby {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3vh;
+  padding: 4vh;
+  text-align: center;
+}
+
+.tv-lobby__logo {
+  max-height: 22vh;
+  max-width: 40vw;
+  object-fit: contain;
+  filter: drop-shadow(0 0 2vh rgba(0, 0, 0, 0.6));
+}
+
+.tv-lobby__pack {
+  font-size: 5.5vh;
+  font-weight: 800;
+  color: var(--gold-soft);
+}
+
+.tv-lobby__meta {
+  font-size: 3vh;
+  color: var(--text-dim);
+}
+
+/* --- Игроки на ТВ --- */
+
+.tv-scoreboard {
+  display: flex;
+  justify-content: center;
+  gap: 1.2vw;
+  padding: 1.2vh 2vw;
+  background: linear-gradient(180deg, rgba(6, 12, 44, 0.92), rgba(4, 8, 31, 0.92));
+  border-top: 0.35vh solid var(--gold-dim);
+}
+
+.tv-player {
+  min-width: 12vw;
+  padding: 1.2vh 1vw;
+  border-radius: 1.2vh;
+  border: 0.25vh solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, #14245e 0%, #0c1745 100%);
+  text-align: center;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.tv-player__name {
+  font-size: 3.2vh;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tv-player__score {
+  font-size: 4.6vh;
+  font-weight: 900;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.tv-player__score--negative {
+  color: var(--danger);
+}
+
+.tv-player--active {
+  border-color: var(--gold);
+  box-shadow: 0 0 3vh rgba(255, 200, 50, 0.5);
+  transform: translateY(-0.6vh);
+}
+
+/* --- Игровое табло --- */
+
+.tv-board {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2vh 2vw;
+  gap: 1.5vh;
+  min-height: 0;
+}
+
+.tv-board__round {
+  text-align: center;
+  font-size: 4.2vh;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+  text-shadow: 0 0.3vh 1vh rgba(0, 0, 0, 0.7);
+}
+
+.tv-board__grid {
+  flex: 1;
+  display: grid;
+  grid-auto-rows: 1fr;
+  gap: 0.8vh;
+  min-height: 0;
+}
+
+.tv-theme.tv-theme--row {
+  text-align: left;
+  justify-content: flex-start;
+  padding: 0.6vh 1.2vw;
+  font-size: 2.4vh;
+  line-height: 1.15;
+}
+
+/* Длинные названия тем: переносим, обрезаем многоточием после 3 строк */
+.tv-theme__label {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  min-width: 0;
+}
+
+.tv-sound-toggle {
+  position: fixed;
+  top: 1.6vh;
+  right: 1.6vh;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 6.4vh;
+  height: 6.4vh;
+  border-radius: 50%;
+  border: 0.2vh solid rgba(255, 255, 255, 0.25);
+  background: rgba(10, 20, 60, 0.55);
+  color: var(--gold);
+  cursor: pointer;
+  transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.tv-sound-toggle--off {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.tv-theme {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.6vh 0.6vw;
+  background: linear-gradient(180deg, #1d2f77 0%, #142158 100%);
+  border: 0.25vh solid #2f439c;
+  border-radius: 0.8vh;
+  font-size: 3vh;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  overflow: hidden;
+}
+
+.tv-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, var(--blue-cell) 0%, #101f56 100%);
+  border: 0.25vh solid #3350a8;
+  border-radius: 0.8vh;
+  font-size: 4.6vh;
+  font-weight: 900;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0.25vh 0.6vh rgba(0, 0, 0, 0.8);
+  transition: background 0.2s ease, opacity 0.3s ease;
+}
+
+.tv-cell--used {
+  background: rgba(8, 14, 48, 0.6);
+  border-color: rgba(51, 80, 168, 0.3);
+  color: transparent;
+  text-shadow: none;
+}
+
+.tv-cell--special {
+  color: var(--gold-soft);
+}
+
+/* --- Экран вопроса --- */
+
+.tv-question {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3vh;
+  padding: 3vh 6vw;
+  text-align: center;
+  animation: tv-fade-in 0.4s ease;
+  min-height: 0;
+  overflow: hidden;
+}
+
+@keyframes tv-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.tv-question__meta {
+  display: flex;
+  align-items: center;
+  gap: 3vw;
+  font-size: 3.4vh;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-dim);
+}
+
+.tv-question__price {
+  font-size: 4.4vh;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+.tv-question__text {
+  font-size: 5vh;
+  font-weight: 700;
+  line-height: 1.35;
+  max-width: 70vw;
+}
+
+.tv-question__image {
+  max-height: 52vh;
+  max-width: 70vw;
+  object-fit: contain;
+  border-radius: 1vh;
+  box-shadow: 0 1vh 4vh rgba(0, 0, 0, 0.6);
+}
+
+.tv-question__video {
+  max-height: 55vh;
+  max-width: 75vw;
+  border-radius: 1vh;
+}
+
+.tv-question__answer {
+  font-size: 5.4vh;
+  font-weight: 900;
+  color: var(--gold);
+  padding: 2vh 4vw;
+  border: 0.4vh solid var(--gold);
+  border-radius: 1.4vh;
+  background: rgba(10, 20, 69, 0.85);
+  animation: tv-fade-in 0.5s ease;
+}
+
+.tv-question__label {
+  font-size: 2.6vh;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+}
+
+/* --- Таймер на ТВ --- */
+
+.tv-timer {
+  position: absolute;
+  top: 2.5vh;
+  right: 2.5vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6vh;
+}
+
+.tv-timer__ring {
+  width: 11vh;
+  height: 11vh;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.6vh;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--gold);
+  background: rgba(6, 13, 51, 0.9);
+  border: 0.5vh solid var(--gold);
+}
+
+.tv-timer__ring--low {
+  color: var(--danger);
+  border-color: var(--danger);
+  animation: tv-blink 0.8s ease infinite;
+}
+
+@keyframes tv-blink {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* --- Спецэкраны --- */
+
+.tv-special {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4vh;
+  text-align: center;
+  animation: tv-fade-in 0.45s ease;
+  padding: 4vh;
+}
+
+.tv-special__icon {
+  color: var(--gold);
+}
+
+.tv-special__title {
+  font-size: 9vh;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  text-shadow: 0 0 5vh rgba(255, 200, 50, 0.4);
+}
+
+.tv-special__sub {
+  font-size: 4vh;
+  color: var(--text-light);
+}
+
+.tv-auction__bid {
+  font-size: 12vh;
+  font-weight: 900;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Финал --- */
+
+.tv-final__themes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2vh 2vw;
+  justify-content: center;
+  max-width: 80vw;
+}
+
+.tv-final__theme {
+  padding: 2.2vh 2.5vw;
+  font-size: 3.8vh;
+  font-weight: 800;
+  text-transform: uppercase;
+  border: 0.3vh solid var(--gold-dim);
+  border-radius: 1.2vh;
+  background: linear-gradient(180deg, #1d2f77, #101f56);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.tv-final__theme--excluded {
+  opacity: 0.15;
+  transform: scale(0.92);
+  text-decoration: line-through;
+}
+
+/* --- Итоги --- */
+
+.tv-results {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4vh;
+  animation: tv-fade-in 0.6s ease;
+  padding: 4vh;
+}
+
+.tv-results__row {
+  display: grid;
+  grid-template-columns: 6vh 30vw 14vw;
+  align-items: center;
+  gap: 2vw;
+  font-size: 4.4vh;
+  font-weight: 700;
+  padding: 1.4vh 2vw;
+  border-bottom: 0.2vh solid rgba(255, 255, 255, 0.12);
+}
+
+.tv-results__row--winner {
+  color: var(--gold);
+  border: 0.3vh solid var(--gold);
+  border-radius: 1.2vh;
+  box-shadow: 0 0 4vh rgba(255, 200, 50, 0.3);
+}
+
+/* --- Пауза / отключение ведущего --- */
+
+.tv-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 8, 31, 0.78);
+  backdrop-filter: blur(4px);
+  z-index: 50;
+  animation: tv-fade-in 0.3s ease;
+}
+
+.tv-overlay__box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2vh;
+  padding: 4vh 5vw;
+  border: 0.4vh solid var(--gold);
+  border-radius: 2vh;
+  background: var(--blue-dark);
+  font-size: 4.6vh;
+  font-weight: 800;
+  text-align: center;
+}
+
+.tv-overlay__sub {
+  font-size: 3vh;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+.tv-player__badge {
+  font-size: 1.6vh;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #0c1745;
+  background: var(--gold);
+  border-radius: 1vh;
+  padding: 0.3vh 1vh;
+  margin-bottom: 0.4vh;
+  animation: tv-player-badge-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes tv-player-badge-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+/* --- Заставка раунда --- */
+
+.tv-intro {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4vh;
+  padding: 4vh 4vw;
+  text-align: center;
+}
+
+.tv-intro__round {
+  font-size: 7vh;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: 0 0 4vh rgba(255, 200, 50, 0.35);
+}
+
+.tv-intro__themes {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+  min-height: 30vh;
+  justify-content: center;
+}
+
+.tv-intro__theme {
+  font-size: 5vh;
+  font-weight: 700;
+  color: #fff;
+  animation: tv-intro-reveal 0.7s cubic-bezier(0.2, 0.9, 0.25, 1.2) both;
+}
+
+@keyframes tv-intro-reveal {
+  from { opacity: 0; transform: translateY(3vh) scale(0.92); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.tv-intro__hint {
+  font-size: 2.4vh;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  animation: tv-player-badge-pulse 1.6s ease-in-out infinite;
+}
+
+.tv-sound-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2vh;
+  font-size: 3vh;
+  font-weight: 800;
+  color: #0c1745;
+  background: var(--gold);
+  border: none;
+  border-radius: 1.4vh;
+  padding: 1.4vh 3vh;
+  cursor: pointer;
+  animation: tv-player-badge-pulse 1.4s ease-in-out infinite;
+}
